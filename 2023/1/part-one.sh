@@ -1,9 +1,9 @@
 #!/bin/sh
-stdin=$(cat -)
+input=$(cat ./input.txt);
 
 result=0;
 
-for line in ${stdin[@]}; do
+for line in ${input[@]}; do
    cali=$(echo "$line" | grep -o '[0-9]' | head -n1);
    bration=$(echo "$line" | grep -o '[0-9]' | tail -n1);
 
