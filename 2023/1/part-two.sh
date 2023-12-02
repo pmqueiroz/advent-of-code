@@ -14,8 +14,8 @@ declare -A spelled_out_digit_map=(
 );
 
 function get_calibration {
-   cali=$(echo "$1" | grep -o '[0-9]' | head -n1);
-   bration=$(echo "$1" | grep -o '[0-9]' | tail -n1);
+   cali="${1:0:1}";
+   bration="${1: -1}";
 
    echo "$cali$bration"
 }
