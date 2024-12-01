@@ -5,7 +5,7 @@ import "io"
 const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
 
 def run(input str) {
-  io::printLn(input)
+  io::println(input)
 }
 
 run("example-input")
