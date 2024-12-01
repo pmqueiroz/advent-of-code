@@ -1,0 +1,60 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def bubbleSort(array arr) {
+  const n num = ~array
+  for mut i num = 0, n - 2 {
+    for mut j num = 0, n - i - 2 {
+      if array[j] > array[j + 1] {
+        const temp num = array[j]
+        array[j] = array[j + 1]
+        array[j + 1] = temp
+      }
+    }
+  }
+  return array
+}
+
+def abs(n num) {
+  if n < 0 {
+    return n * -1
+  }
+  return n
+}
+
+def run(input str) {
+  const left arr = []
+  const right arr = []
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    const line arr = strings::split(lines[i], ' ')
+
+    left[i] = num(line[0])
+    right[i] = num(line[3])
+  }
+
+  mut result num = 0
+
+  const sortedLeft arr = bubbleSort(left)
+  const sortedRight arr = bubbleSort(right)
+
+  for mut i num = 0, ~lines - 1 {
+    result = result + abs(sortedLeft[i] - sortedRight[i])
+  }
+
+  io::println(result)
+}
+
+# run("3   4
+# 4   3
+# 2   5
+# 1   3
+# 3   9
+# 3   3")
+
+run(os::readFile(inputPath))
