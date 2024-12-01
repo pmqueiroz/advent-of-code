@@ -11,7 +11,7 @@ jobs:
       matrix:
         events:
           - { year: 2023, runner: 'bash', ext: 'sh' }
-          - { year: 2023, runner: 'umbra', ext: 'u' }
+          - { year: 2024, runner: 'umbra', ext: 'u' }
       fail-fast: false
     steps:
       - name: Checkout
@@ -36,6 +36,7 @@ jobs:
       - name: Run day
         working-directory: ./${{ matrix.events.year }}
         run: |
+          set -e
           for day in $SOLUTIONS; do
             echo "Running day $day part one"
             $RUNNER "$day"/part-one.$EXT
