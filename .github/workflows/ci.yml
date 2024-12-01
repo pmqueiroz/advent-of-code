@@ -27,7 +27,7 @@ jobs:
       - name: Get implemented solutions
         id: solutions
         working-directory: ./${{ matrix.events.year }}
-        run: 
+        run: |
           echo "trying to find solutions in ${{ matrix.events.year }}"
           pwd
           solutions=$(find . -mindepth 1 -maxdepth 1 -type d ! -name 'template' -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
