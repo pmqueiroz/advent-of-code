@@ -1,0 +1,47 @@
+name: ci
+
+on:
+  push
+
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        events:
+          - { year: 2023, runner: 'bash', ext: 'sh' }
+          - { year: 2023, runner: 'umbra', ext: 'u' }
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@v3
+      - name: Setup umbra
+        run: |
+          asdf plugin add umbra https://github.com/pmqueiroz/asdf-umbra.git
+      - name: Setup deps
+        working-directory: ${{ matrix.events.year }}
+        run: asdf install
+      - name: Get implemented solutions
+        id: solutions
+        working-directory: ${{ matrix.events.year }}
+        run: 
+          solutions=$(find . -mindepth 1 -maxdepth 1 -type d ! -name 'template' -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
+          echo "solutions=$solutions" >> $GITHUB_OUTPUT
+      - name: Run day
+        working-directory: ${{ matrix.events.year }}
+        run: |
+          for day in $SOLUTIONS; do
+            echo "Running day $day part one"
+            $RUNNER "$day"/part-one.$EXT
+            echo "Running day $day part two"
+            $RUNNER "$day"/part-two.$EXT
+          done
+        env:
+          RUNNER: ${{ matrix.events.runner }}
+          SOLUTIONS: ${{ steps.solutions.outputs.solutions }}
+          EXT: ${{ matrix.events.ext }}
+      
+          
