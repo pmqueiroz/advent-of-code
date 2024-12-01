@@ -1,12 +1,48 @@
 import "native/os"
 import "native/path"
 import "io"
+import "strings"
 
 const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
 
 def run(input str) {
-  io::printLn(input)
+  const left arr = []
+  const right arr = []
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    const line arr = strings::split(lines[i], ' ')
+
+    left[i] = num(line[0])
+    right[i] = num(line[3])
+  }
+
+  mut similarity num = 0
+
+  const occurrences hashmap = {}
+
+  for mut i num = 0, ~right - 1 {
+    if occurrences[right[i]] == null {
+      occurrences[right[i]] = 1
+    } else {
+      occurrences[right[i]] = occurrences[right[i]] + 1
+    }
+  }
+
+  for mut i num = 0, ~left - 1 {
+    if occurrences[left[i]] != null {
+      similarity = similarity + left[i] * occurrences[left[i]]
+    }
+  }
+
+  io::println(similarity)
 }
 
-run("example-input")
-# run(os::readFile(inputPath))
+# run("3   4
+# 4   3
+# 2   5
+# 1   3
+# 3   9
+# 3   3")
+
+run(os::readFile(inputPath))
