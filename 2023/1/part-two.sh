@@ -1,5 +1,5 @@
 #!/bin/sh
-input=$(cat ./input.txt);
+input=$(cat "$(dirname "$0")/input.txt");
 result=0;
 declare -A spelled_out_digit_map=(
    ["one"]="1"
@@ -41,12 +41,12 @@ function get_valid_substrings {
       done
    done
 
-   echo $valid_digits;
+   echo "$valid_digits";
 }
 
 for line in ${input[@]}; do
-   valid_digits=$(get_valid_substrings $line)
-   calibration=$(get_calibration $valid_digits);
+   valid_digits=$(get_valid_substrings "$line")
+   calibration=$(get_calibration "$valid_digits");
 
    result=$(( $result + $calibration ))
 done

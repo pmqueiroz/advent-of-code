@@ -1,5 +1,5 @@
 #!/bin/sh
-input=$(cat ./input.txt);
+input=$(cat "$(dirname "$0")/input.txt");
 
 result=0;
 
