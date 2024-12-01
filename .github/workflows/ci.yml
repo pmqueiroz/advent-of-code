@@ -24,10 +24,6 @@ jobs:
       - name: Setup deps
         working-directory: ./${{ matrix.events.year }}
         run: asdf install
-      - name: Check umbra install
-        run: |
-          asdf list
-          ls $(dirname $(asdf which umbra))
       - name: Get implemented solutions
         id: solutions
         working-directory: ./${{ matrix.events.year }}
@@ -38,7 +34,6 @@ jobs:
         working-directory: ./${{ matrix.events.year }}
         run: |
           set -e
-          which $RUNNER
           for day in $SOLUTIONS; do
             echo "Running day $day part one"
             $RUNNER "$day"/part-one.$EXT
