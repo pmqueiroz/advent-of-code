@@ -22,16 +22,19 @@ jobs:
         run: |
           asdf plugin add umbra https://github.com/pmqueiroz/asdf-umbra.git
       - name: Setup deps
-        working-directory: ${{ matrix.events.year }}
+        working-directory: ./${{ matrix.events.year }}
         run: asdf install
       - name: Get implemented solutions
         id: solutions
-        working-directory: ${{ matrix.events.year }}
+        working-directory: ./${{ matrix.events.year }}
         run: 
+          echo "trying to find solutions in ${{ matrix.events.year }}"
+          pwd
           solutions=$(find . -mindepth 1 -maxdepth 1 -type d ! -name 'template' -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
+          echo "found solutions=$solutions"
           echo "solutions=$solutions" >> $GITHUB_OUTPUT
       - name: Run day
-        working-directory: ${{ matrix.events.year }}
+        working-directory: ./${{ matrix.events.year }}
         run: |
           for day in $SOLUTIONS; do
             echo "Running day $day part one"
