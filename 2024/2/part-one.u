@@ -1,0 +1,55 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "math"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def run(input str) {
+  const lines arr = strings::split(input, '\n')
+  const safes num = 0
+  for mut i num = 0, ~lines - 1 {
+    const line arr = strings::split(lines[i], ' ')
+    mut isAscending bool
+    mut isSafe bool = false
+
+    for mut j num = 0, ~line - 2 {
+      const current num = num(line[j])
+      const next num = num(line[j + 1])
+      
+      if isAscending == null {
+        isAscending = current <= next
+      }
+
+      if (isAscending and current > next) or (not isAscending and current < next) {
+        isSafe = false
+        break
+      }
+
+      mut diff num = math::abs(current - next)
+
+      if (diff >= 1 and diff <= 3) {
+        isSafe = true
+      } else {
+        isSafe = false
+        break
+      }
+    }
+
+    if isSafe {
+      safes = safes + 1
+    }
+    
+  }
+
+  io::println(safes)
+}
+
+# run("7 6 4 2 1
+# 1 2 7 8 9
+# 9 7 6 2 1
+# 1 3 2 4 5
+# 8 6 4 4 1
+# 1 3 6 7 9")
+run(os::readFile(inputPath))
