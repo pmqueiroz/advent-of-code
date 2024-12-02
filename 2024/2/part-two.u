@@ -1,0 +1,78 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "math"
+
+const input_path str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def filter_by_index(line arr, index num) arr {
+  const new_line arr = []
+  for mut i num = 0, ~line - 1 {
+    if i != index {
+      new_line[~new_line] = line[i]
+    }
+  }
+  return new_line
+}
+
+def safe(left num, right num, ascending bool) bool {
+  if (ascending and left > right) or (not ascending and left < right) {
+    return false
+  }
+
+  const diff num = math::abs(left - right)
+
+  return not (diff < 1 or diff > 3)
+}
+
+def check_line(line arr) arr {
+  const ascending bool = num(line[0]) < num(line[~line -1])
+
+  for mut i num = 0, ~line - 2 {
+    const current num = num(line[i])
+    const next num = num(line[i + 1])
+
+    if not safe(current, next, ascending) {
+      return [i, i + 1]
+    }
+  }
+
+  return []
+}
+
+def run(input str) {
+  const lines arr = strings::split(input, '\n')
+  const safes num = 0
+
+  for mut i num = 0, ~lines - 1 {
+    const line arr = strings::split(lines[i], ' ')
+    mut is_safe bool = true
+
+    const retries arr = check_line(line)
+
+    if ~retries > 0 {
+      is_safe = false
+      for mut j num = 0, ~retries - 1 {
+        if ~check_line(filter_by_index(line, retries[j])) == 0 {
+          is_safe = true
+          break
+        }
+      }
+    }
+ 
+    if is_safe {
+      safes = safes + 1
+    }
+  }
+
+  io::println(safes)
+}
+
+# run("7 6 4 2 1
+# 1 2 7 8 9
+# 9 7 6 2 1
+# 1 3 2 4 5
+# 8 6 4 4 1
+# 1 3 6 7 9")
+run(os::readFile(input_path))
