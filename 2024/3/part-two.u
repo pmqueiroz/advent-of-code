@@ -107,7 +107,13 @@ def parser(tokens arr) arr {
   for i < ~tokens {
     match tokens[i] {
       Token.MUL {
-        if (tokens[i + 1] == Token.LEFT_PARENTHESIS) and (tokens[i + 2] enumof Token.NUMBER) and (tokens[i + 3] == Token.COMMA) and (tokens[i + 4] enumof Token.NUMBER) and (tokens[i + 5] == Token.RIGHT_PARENTHESIS) {
+        if (
+          tokens[i + 1] == Token.LEFT_PARENTHESIS) and
+          (tokens[i + 2] enumof Token.NUMBER) and
+          (tokens[i + 3] == Token.COMMA) and
+          (tokens[i + 4] enumof Token.NUMBER) and
+          (tokens[i + 5] == Token.RIGHT_PARENTHESIS)
+        {
           mut left num = 0
           mut right num = 0
 
