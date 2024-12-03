@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         events:
+          - { year: 2015, runner: 'crystal', ext: 'cr' }
           - { year: 2023, runner: 'bash', ext: 'sh' }
           - { year: 2024, runner: 'umbra', ext: 'u' }
       fail-fast: false
@@ -21,6 +22,9 @@ jobs:
       - name: Setup umbra
         run: |
           asdf plugin add umbra https://github.com/pmqueiroz/asdf-umbra.git
+      - name: Setup crystal
+        run: |
+          asdf plugin add crystal
       - name: Setup deps
         working-directory: ./${{ matrix.events.year }}
         run: asdf install
