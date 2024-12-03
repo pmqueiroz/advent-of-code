@@ -1,0 +1,181 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+enum Token {
+  MUL
+  LEFT_PARENTHESIS
+  RIGHT_PARENTHESIS
+  NUMBER(num)
+  COMMA
+  INVALID
+  DO
+  DONT
+}
+
+enum Expression {
+  MUL(num, num)
+  DO
+  DONT
+}
+
+def isDigit(c str) bool {
+  return char(c) >= '0' and char(c) <= '9'
+}
+
+def searchWord(chars any, offset num, word str) bool {
+  if ~word > ~chars - offset {
+    return false
+  }
+
+  for mut i num = 0, ~word - 1 {
+    if chars[offset + i] != str(word[i]) {
+      return false
+    }
+  }
+  return true
+}
+
+def lexer(input str) arr {
+  mut tokens arr = []
+  const chars any = range input
+  mut i num = 0
+
+  for i < ~chars {
+    const c str = chars[i]
+
+    if c == "(" {
+      tokens[~tokens] = Token.LEFT_PARENTHESIS
+      i = i + 1
+      continue
+    }
+
+    if c == ")" {
+      tokens[~tokens] = Token.RIGHT_PARENTHESIS
+      i = i + 1
+      continue
+    }
+
+    if c == "," {
+      tokens[~tokens] = Token.COMMA
+      i = i + 1
+      continue
+    }
+
+    if isDigit(c) {
+      mut n str = c
+      for i < ~chars - 1 and isDigit(chars[i + 1]) {
+        n = n + chars[i + 1]
+        i = i + 1
+      }
+      tokens[~tokens] = Token.NUMBER(num(n))
+      i = i + 1
+      continue
+    }
+
+    if searchWord(chars, i, "mul") {
+      tokens[~tokens] = Token.MUL
+      i = i + 3
+      continue
+    }
+
+    if searchWord(chars, i, "do") {
+      if searchWord(chars, i + 2, "n't") {
+        tokens[~tokens] = Token.DONT
+        i = i + 5
+      } else {
+        tokens[~tokens] = Token.DO
+        i = i + 2
+      }
+      continue
+    }
+
+    tokens[~tokens] = Token.INVALID
+    i = i + 1
+  }
+
+  return tokens
+}
+
+def parser(tokens arr) arr {
+  mut i num = 1
+  mut expressions arr = []
+
+  for i < ~tokens {
+    match tokens[i] {
+      Token.MUL {
+        if (tokens[i + 1] == Token.LEFT_PARENTHESIS) and (tokens[i + 2] enumof Token.NUMBER) and (tokens[i + 3] == Token.COMMA) and (tokens[i + 4] enumof Token.NUMBER) and (tokens[i + 5] == Token.RIGHT_PARENTHESIS) {
+          mut left num = 0
+          mut right num = 0
+
+          match tokens[i + 2] {
+            Token.NUMBER |n| {
+              left = n
+            }
+          }
+
+          match tokens[i + 4] {
+            Token.NUMBER |n| {
+              right = n
+            }
+          }
+
+          expressions[~expressions] = Expression.MUL(left, right)
+          i = i + 4
+        }
+      }
+      Token.DO {
+        if (tokens[i + 1] == Token.LEFT_PARENTHESIS) and (tokens[i + 2] == Token.RIGHT_PARENTHESIS) {
+          expressions[~expressions] = Expression.DO
+          i = i + 2
+        }
+      }
+      Token.DONT {
+        if (tokens[i + 1] == Token.LEFT_PARENTHESIS) and (tokens[i + 2] == Token.RIGHT_PARENTHESIS) {
+          expressions[~expressions] = Expression.DONT
+          i = i + 2
+        }
+      }
+    }
+    i = i + 1
+  }
+
+
+  return expressions
+}
+
+def interpreter(expressions arr) {
+  mut result num = 0
+  mut enabled bool = true
+
+  for mut i num = 0, ~expressions - 1 {
+    match expressions[i] {
+      Expression.MUL |left, right| {
+        if enabled {
+          result = result + (left * right)
+        }
+      }
+      Expression.DO {
+        enabled = true
+      }
+      Expression.DONT {
+        enabled = false
+      }
+    }
+  }
+  return result
+}
+
+def run(input str) {
+  const tokens arr = lexer(input)
+  const expressions arr = parser(tokens)
+  const result num = interpreter(expressions)
+
+  io::println(result)
+}
+
+# run("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))")
+run(os::readFile(inputPath))
