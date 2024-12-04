@@ -1,6 +1,8 @@
+require "set"
+
 def run(input : String)
   gps = [0, 0]
-  visited = { gps => true }
+  visited = Set{gps.to_s}
 
   input.chars.map do |char|
     case char
@@ -14,7 +16,7 @@ def run(input : String)
       gps[0] -= 1
     end
 
-    visited[gps] = true
+    visited << gps.to_s
   end
 
   puts visited.size
