@@ -27,7 +27,9 @@ jobs:
           asdf plugin add crystal
       - name: Setup deps
         working-directory: ./${{ matrix.events.year }}
-        run: asdf install
+        run: |
+          asdf install
+          sudo apt-get update && sudo apt-get install -y libevent-dev
       - name: Get implemented solutions
         id: solutions
         working-directory: ./${{ matrix.events.year }}
