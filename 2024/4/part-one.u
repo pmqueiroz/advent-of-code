@@ -1,0 +1,65 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+const directions arr = [
+  [-1, 0],
+  [0, 1],
+  [1, 0],
+  [0, -1],
+  [-1, 1],
+  [1, 1],
+  [1, -1],
+  [-1, -1]
+]
+
+def run(input str) {
+  mut result arr = []
+  const target str = "XMAS"
+  const lines arr = strings::split(input, '\n')
+
+  for mut y num = 0, ~lines -1 {
+    for mut x num = 0, ~range lines[y] -1 {
+      for mut i num = 0, ~directions -1 {
+        const dx num = directions[i][0]
+        const dy num = directions[i][1]
+        for mut j num = 0, ~target -1 {
+          const nx num = x + dx * j
+          const ny num = y + dy * j
+
+          if (
+            nx < 0 or
+            nx >= ~range lines[y] or
+            ny < 0 or
+            ny >= ~lines
+          ) {
+            break
+          }
+
+          if lines[ny][nx] != target[j] {
+            break
+          }
+          if j == ~target -1 {
+            result[~result] = [x, y]
+          }
+        }
+      }
+    }
+  }
+
+  io::println(~result)
+}
+
+# run("MMMSXXMASM
+# MSAMXMSMSA
+# AMXSXMAAMM
+# MSAMASMSMX
+# XMASAMXAMM
+# XXAMMXXAMA
+# SMSMSASXSS
+# SAXAMASAAA
+# MAMMMXMMMM
+# MXMXAXMASX")
+run(os::readFile(inputPath))
