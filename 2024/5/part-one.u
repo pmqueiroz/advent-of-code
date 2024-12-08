@@ -1,0 +1,97 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "math"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def to_index_map(array arr) {
+  mut map hashmap = {}
+  for mut i num = 0, ~array - 1 {
+    map[array[i]] = i
+  }
+  return map
+}
+
+def parse(input str) {
+  mut rules arr = []
+  mut pages arr = []
+  mut checking_rules bool = true
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    if lines[i] == "" {
+      checking_rules = false
+      continue
+    }
+
+    if checking_rules {
+      rules[~rules] = strings::split(lines[i], '|')
+    } else {
+      const page arr = strings::split(lines[i], ',')
+      pages[~pages] = to_index_map(page)
+      pages[~pages - 1].mid = page[math::floor(~page / 2)]
+    }
+  }
+  return [rules, pages]
+}
+
+def run(input str) {
+  const result num = 0
+  const parsed arr = parse(input)
+  const rules arr = parsed[0]
+  const pages arr = parsed[1]
+
+  for mut i num = 0, ~pages - 1 {
+    const is_page_valid bool = true
+
+    for mut j num = 0, ~rules - 1 {
+      const left str = rules[j][0]
+      const right str = rules[j][1]
+
+      if pages[i][left] != null and pages[i][right] != null {
+        if pages[i][left] > pages[i][right] {
+          is_page_valid = false
+          break
+        }
+      }
+    }
+
+    if is_page_valid {
+      result = result + num(pages[i].mid)
+    }
+  }
+
+  io::println(result)
+}
+
+run("47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47")
+run(os::readFile(inputPath))
