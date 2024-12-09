@@ -1,0 +1,124 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "math"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def to_order_map(array arr) {
+  mut map hashmap = {}
+  for mut i num = 0, ~array - 1 {
+    map[array[i]] = i
+  }
+  return map
+}
+
+def get_mid(array arr) {
+  return array[math::floor(~array / 2)]
+}
+
+def move_before(array arr, target num, reference num) {
+  mut result arr = []
+  mut already_swapped bool = false
+  for mut i num = 0, ~array - 1 {
+    if i == reference {
+      result[~result] = array[target]
+      result[~result] = array[reference]
+      already_swapped = true
+    } else if i != target {
+      result[~result] = array[i]
+    }
+  }
+
+  return result
+}
+
+def parse(input str) {
+  mut rules arr = []
+  mut pages arr = []
+  mut checking_rules bool = true
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    if lines[i] == "" {
+      checking_rules = false
+      continue
+    }
+
+    if checking_rules {
+      rules[~rules] = strings::split(lines[i], '|')
+    } else {
+      const page arr = strings::split(lines[i], ',')
+      pages[~pages] = page
+    }
+  }
+  return [rules, pages]
+}
+
+def run(input str) {
+  const result num = 0
+  const parsed arr = parse(input)
+  const rules arr = parsed[0]
+  const pages arr = parsed[1]
+
+  for mut i num = 0, ~pages - 1 {
+    const is_page_valid bool = true
+    mut page_order hashmap = to_order_map(pages[i])
+    const fixed_page bool = false
+
+    mut j num = 0
+
+    for j < ~rules {
+      const left str = rules[j][0]
+      const right str = rules[j][1]
+
+      if page_order[left] != null and page_order[right] != null {
+        if page_order[left] > page_order[right] {
+          fixed_page = true
+          pages[i] = move_before(pages[i], page_order[left], page_order[right])
+          page_order = to_order_map(pages[i])
+          j = 0
+          continue
+        }
+      }
+      j = j + 1
+    }
+
+    if fixed_page {
+      result = result + num(get_mid(pages[i]))
+    }
+  }
+
+  io::println(result)
+}
+
+run("47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47")
+run(os::readFile(inputPath))
