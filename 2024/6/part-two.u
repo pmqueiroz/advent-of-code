@@ -1,0 +1,143 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "math"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+const direction_map hashmap = {
+  "up": [0, -1],
+  "right": [1, 0],
+  "down": [0, 1],
+  "left": [-1, 0],
+}
+
+const rotation_map hashmap = {
+  "up": "right",
+  "right": "down",
+  "down": "left",
+  "left": "up",
+}
+
+def parse(input str) {
+  mut result arr = []
+
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    result[~result] = range lines[i]
+  }
+
+  return result
+}
+
+def find_guard(maze arr) arr {
+  for mut y num = 0, ~maze - 1 {
+    for mut x num = 0, ~maze[y] - 1 {
+      if maze[y][x] == "^" {
+        return [x, y]
+      }
+    }
+  }
+  return [-1, -1]
+}
+
+def valid_pos(maze arr, pos arr) bool {
+  const x num = pos[0]
+  const y num = pos[1]
+  return x >= 0 and x < ~maze[0] and y >= 0 and y < ~maze
+}
+
+def is_same_pos(a arr, b arr) bool {
+  return a[0] == b[0] and a[1] == b[1]
+}
+
+def patrol(maze arr, guard arr, direction str, obstacle arr) arr {
+  const nx num = guard[0] + direction_map[direction][0]
+  const ny num = guard[1] + direction_map[direction][1]
+
+  if !valid_pos(maze, [nx, ny]) {
+    return [guard, "outbound"]
+  }
+
+  if maze[ny][nx] == "#" or (nx == obstacle[0] and ny == obstacle[1]) {
+    return patrol(maze, guard, rotation_map[direction], obstacle)
+  }
+
+  return [[nx, ny], direction]
+}
+
+def detect_floyds_cycle(maze arr, guard arr, obstacle arr) bool {
+  mut tortoise_pos arr, tortoise_dir str = patrol(maze, guard, "up", obstacle)
+  mut hare_pos arr, hare_dir str = patrol(maze, tortoise_pos, tortoise_dir, obstacle)
+
+  if hare_dir == "outbound" {
+    return true
+  }
+
+  for {
+    if is_same_pos(hare_pos, tortoise_pos) and hare_dir == tortoise_dir {
+      return true
+    }
+
+    const tortoise_patrol arr = patrol(maze, tortoise_pos, tortoise_dir, obstacle)
+    tortoise_pos = tortoise_patrol[0]
+    tortoise_dir = tortoise_patrol[1]
+    if tortoise_dir == "outbound" {
+      return false
+    }
+    const hare_first_patrol arr = patrol(maze, hare_pos, hare_dir, obstacle)
+    hare_pos = hare_first_patrol[0]
+    hare_dir = hare_first_patrol[1]
+    if hare_dir == "outbound" {
+      return false
+    }
+    const hare_second_patrol arr = patrol(maze, hare_pos, hare_dir, obstacle)
+    hare_pos = hare_second_patrol[0]
+    hare_dir = hare_second_patrol[1]
+    if hare_dir == "outbound" {
+      return false
+    }
+  }
+
+  return false
+}
+
+def run(input str) {
+  const maze arr = parse(input)
+  const guard arr = find_guard(maze)
+  const loops num = 0
+
+  for mut i num = 0, (~maze * ~maze[0]) - 1 {
+    const x num = math::floor(i / ~maze[0])
+    const y num = i % ~maze[0]
+
+    if maze[y][x] == "#" or (guard[0] == x and guard[1] == y) {
+      continue
+    }
+
+    if detect_floyds_cycle(maze, guard, [x, y]) {
+      loops = loops + 1
+    }
+  }
+
+  io::println(loops)
+}
+
+run("....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...")
+
+# --- ALERT ---
+# That solutions takes more than 8 minutes to run on the input.
+# Be patient xd.
+
+# run(os::readFile(inputPath))
