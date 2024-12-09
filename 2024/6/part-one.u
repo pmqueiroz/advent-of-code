@@ -1,0 +1,89 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+const direction_map hashmap = {
+  "up": [0, -1],
+  "right": [1, 0],
+  "down": [0, 1],
+  "left": [-1, 0],
+}
+
+const rotation_map hashmap = {
+  "up": "right",
+  "right": "down",
+  "down": "left",
+  "left": "up",
+}
+
+def parse(input str) {
+  mut result arr = []
+
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    result[~result] = range lines[i]
+  }
+
+  return result
+}
+
+def find_guard(maze arr) arr {
+  for mut y num = 0, ~maze - 1 {
+    for mut x num = 0, ~maze[y] - 1 {
+      if maze[y][x] == "^" {
+        return [x, y]
+      }
+    }
+  }
+  return [-1, -1]
+}
+
+def valid_pos(maze arr, pos arr) bool {
+  const x num = pos[0]
+  const y num = pos[1]
+  return x >= 0 and x < ~maze[0] and y >= 0 and y < ~maze
+}
+
+def run(input str) {
+  const maze arr = parse(input)
+  mut guard arr = find_guard(maze)
+  mut direction str = "up"
+  mut visited hashmap = {}  
+
+  for valid_pos(maze, guard) {
+    visited[str(guard)] = true
+    const nx num = guard[0] + direction_map[direction][0]
+    const ny num = guard[1] + direction_map[direction][1]
+
+    if !valid_pos(maze, [nx, ny]) {
+      break
+    }
+
+    if maze[ny][nx] == "#" {
+      direction = rotation_map[direction]
+      continue
+    }
+
+    guard[0] = nx
+    guard[1] = ny
+  }
+
+  io::println(~visited)
+}
+
+run("....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...")
+
+run(os::readFile(inputPath))
