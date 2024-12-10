@@ -1,0 +1,97 @@
+import "native/os"
+import "native/path"
+import "io"
+import "math"
+import "strings"
+import "arrays"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def to_num(x str) { return num(x) }
+
+def parse(input str) arr {
+  const result arr = []
+  const lines arr = strings::split(input, '\n')
+  for mut i num = 0, ~lines -1 {
+    const parts arr = strings::split(lines[i], ':')
+    const expected num = num(parts[0])
+    const expression arr = arrays::map(strings::split(strings::trim(parts[1]), ' '), to_num)
+    result[~result] = { expected: expected, expression: expression }
+  }
+
+  return result
+}
+
+def operators_permutation(count num) {
+  const operators arr = ["+", "*"]
+  const result arr = []
+
+  if (count == 1) {
+    for mut i num = 0, ~operators - 1 {
+      const single arr = []
+      single[~single] = operators[i]
+      result[~result] = single
+    }
+    return result
+  }
+
+  const smaller_permutations arr = operators_permutation(count - 1)
+ 
+  for mut i num = 0, ~operators - 1 {
+    for mut j num = 0, ~smaller_permutations - 1 {
+      const combined arr = []
+      combined[~combined] = operators[i]
+
+      for mut k num = 0, ~smaller_permutations[j] - 1 {
+        combined[~combined] = smaller_permutations[j][k]
+      }
+
+      result[~result] = combined
+    }
+  }
+
+  return result
+}
+
+def resolve_expression(expr arr, operations arr) {
+  const result num = expr[0]
+
+  for mut i num = 0, ~operations - 1 {
+    if (operations[i] == "+") {
+      result = result + expr[i + 1]
+    } else {
+      result = result * expr[i + 1]
+    }
+  }
+  return result
+}
+
+def run(input str) {
+  const result num = 0
+  const equations arr = parse(input)
+
+  for mut i num = 0, ~equations - 1 {
+    const possible_operations arr = operators_permutation(~equations[i].expression - 1)
+
+    for mut j num = 0, ~possible_operations - 1 {
+      const tmp num = resolve_expression(equations[i].expression, possible_operations[j])
+      if (tmp == equations[i].expected) {
+        result = result + tmp
+        break
+      }
+    }
+  }
+
+  io::println(result)
+}
+
+run("190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20")
+run(os::readFile(inputPath))
