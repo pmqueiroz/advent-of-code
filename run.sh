@@ -31,6 +31,7 @@ if [ ! -d "$year" ]; then
 fi
 
 echo -e "$(echo $TREE | base64 -d)"
+echo
 msg "Running puzzles for year $year."
 
 days=$(ls -1 "$year" | grep '^[0-9]*$' | sort -n)
