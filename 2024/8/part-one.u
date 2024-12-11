@@ -1,0 +1,81 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "set"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def parse(input str) {
+  const grid arr = []
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    grid[~grid] = range lines[i]
+  }
+
+  return grid
+}
+
+def within_grid(antinode arr, grid arr) {
+  const x num, y num = antinode
+  return x >= 0 and x < ~grid and y >= 0 and y < ~grid[0]
+}
+
+def get_antinodes(a arr, b arr) {
+  const dx num = b[0] - a[0]
+  const dy num = b[1] - a[1]
+
+  return [
+    [a[0] - dx, a[1] - dy],
+    [b[0] + dx, b[1] + dy]
+  ]
+}
+
+def run(input str) {
+  const grid arr = parse(input)
+  const antinodes hashmap = set::new()
+
+  for mut y1 num = 0, ~grid - 1 {
+    for mut x1 num = 0, ~grid[y1] - 1 {
+      if grid[y1][x1] == "." {
+        continue
+      }
+
+      for mut y2 num = y1, ~grid - 1 {
+        for mut x2 num = 0, ~grid[y2] - 1 {
+          if (y2 == y1 and x2 <= x1) {
+            continue
+          }
+
+          if grid[y2][x2] == grid[y1][x1] {
+            const antis arr = get_antinodes([x1, y1], [x2, y2])
+
+            for mut i num = 0, ~antis - 1 {
+              if within_grid(antis[i], grid) {
+                set::add(antinodes, antis[i])
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  io::println(~antinodes)
+}
+
+run("............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............")
+
+run(os::readFile(inputPath))
