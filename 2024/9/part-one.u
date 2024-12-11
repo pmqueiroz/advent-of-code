@@ -1,0 +1,96 @@
+import "native/os"
+import "native/path"
+import "io"
+import "arrays"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def parse(input str) {
+  const disk_map arr = range input
+  const blocks arr = []
+
+  for mut i num = 0, ~disk_map - 1 {
+    mut value any
+    if i == 0 { value = i } else if i % 2 == 0 { value = i / 2 } else { value = "." }
+
+    def populate() {
+      blocks[~blocks] = value
+    }
+
+    arrays::map(range num(disk_map[i]), || {
+      blocks[~blocks] = value
+    })
+  }
+
+  return blocks
+}
+
+def get_last_file_index(blocks arr) num {
+  mut i num = ~blocks - 1
+  for i >= 0 {
+    if blocks[i] != "." {
+      return i
+    }
+
+    i -= 1
+  }
+  return -1
+}
+
+def clone(array arr) {
+  const result arr = []
+  for mut i num = 0, ~array - 1 {
+    result[~result] = array[i]
+  }
+  return result
+}
+
+def swap(blocks arr, a num, b num) {
+  mut result arr = clone(blocks)
+  const temp any = result[a]
+  result[a] = result[b]
+  result[b] = temp
+
+  return result
+}
+
+def rearrange(blocks arr) {
+  mut result arr = clone(blocks)
+  for mut i num = 0, ~blocks - 1 {
+    if blocks[i] == "." {
+      const last_file_index num = get_last_file_index(result)
+      if last_file_index == -1 or last_file_index == i or i > last_file_index {
+        break
+      }
+
+      result = swap(result, i, last_file_index)
+    }
+  }
+  return result
+}
+
+def checksum(blocks arr) num {
+  mut result num = 0
+  for mut i num = 0, ~blocks - 1 {
+    if blocks[i] == "." {
+      break
+    }
+
+    result += i * blocks[i]
+  }
+  return result
+}
+
+def run(input str) {
+  const blocks arr = parse(input)
+  const rearranged_blocks arr = rearrange(blocks)
+
+  io::println(checksum(rearranged_blocks))
+}
+
+run("2333133121414131402")
+
+# --- ALERT ---
+# That solutions takes more than 35 minutes to run on the input.
+# Be patient xd.
+# run(os::readFile(inputPath))
