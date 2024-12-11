@@ -9,9 +9,11 @@ TREE="ICAgXDAzM1szM20qXDAzM1swbQogIFwwMzNbMzJtPlwwMzNbMG1cMDMzWzM4OzU7MjE0bW9cMD
 
 year=$(date +%Y)
 
-read -p "Enter the event year ($year): " input_year
-if [ -n "$input_year" ]; then
-  year=$input_year
+if [ "$1" != "y" ]; then
+  read -p "Enter the event year ($year): " input_year
+  if [ -n "$input_year" ]; then
+    year=$input_year
+  fi
 fi
 
 if [ ! -d "$year"/template ]; then
@@ -22,9 +24,11 @@ fi
 last_day=$(ls -1 "$year" | grep '^[0-9]*$' | sort -n | tail -n 1)
 day=$((last_day + 1))
 
-read -p "Enter the puzzle day ($day): " input_day
-if [ -n "$input_day" ]; then
-  day=$input_day
+if [ "$1" != "y" ]; then
+  read -p "Enter the puzzle day ($day): " input_day
+  if [ -n "$input_day" ]; then
+    day=$input_day
+  fi
 fi
 
 if [[ "$day" -ge 1 && "$day" -le 25 ]]; then
