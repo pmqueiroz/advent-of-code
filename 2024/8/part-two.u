@@ -1,0 +1,98 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "set"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+def parse(input str) {
+  const grid arr = []
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    grid[~grid] = range lines[i]
+  }
+
+  return grid
+}
+
+def within_grid(antinode arr, grid arr) {
+  const x num, y num = antinode
+  return x >= 0 and x < ~grid and y >= 0 and y < ~grid[0]
+}
+
+def get_antinodes(a arr, b arr, grid arr) {
+  const dx num = b[0] - a[0]
+  const dy num = b[1] - a[1]
+
+  const antinodes arr = []
+
+  const directions arr = [
+    [-dx, -dy], 
+    [dx, dy]    
+  ]
+
+  # for direction in directions {
+  for mut i num = 0, ~ directions - 1 {
+    const step_x num, step_y num = directions[i]
+
+    mut current_x num = a[0]
+    mut current_y num = a[1]
+    
+    for within_grid([current_x, current_y], grid) {
+      antinodes[~antinodes] = [current_x, current_y]
+      current_x += step_x
+      current_y += step_y
+    }
+  }
+
+  return antinodes
+}
+
+
+def run(input str) {
+  const grid arr = parse(input)
+  const antinodes hashmap = set::new()
+
+  for mut y1 num = 0, ~grid - 1 {
+    for mut x1 num = 0, ~grid[y1] - 1 {
+      if grid[y1][x1] == "." {
+        continue
+      }
+
+      for mut y2 num = y1, ~grid - 1 {
+        for mut x2 num = 0, ~grid[y2] - 1 {
+          if (y2 == y1 and x2 <= x1) {
+            continue
+          }
+
+          if grid[y2][x2] == grid[y1][x1] {
+            const antis arr = get_antinodes([x1, y1], [x2, y2], grid)
+
+            for mut i num = 0, ~antis - 1 {
+              set::add(antinodes, antis[i])
+            }
+          }
+        }
+      }
+    }
+  }
+
+  io::println(~antinodes)
+}
+
+run("............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............")
+
+run(os::readFile(inputPath))
