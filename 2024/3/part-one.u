@@ -91,7 +91,7 @@ def parser(tokens arr) arr {
 
   for i < ~tokens {
     match tokens[i] {
-      Token.MUL {
+      Token.MUL || {
         if (
           tokens[i + 1] == Token.LEFT_PARENTHESIS) and
           (tokens[i + 2] enumof Token.NUMBER) and
@@ -103,13 +103,13 @@ def parser(tokens arr) arr {
           mut right num = 0
 
           match tokens[i + 2] {
-            Token.NUMBER |n| {
+            Token.NUMBER |n num| {
               left = n
             }
           }
 
           match tokens[i + 4] {
-            Token.NUMBER |n| {
+            Token.NUMBER |n num| {
               right = n
             }
           }
@@ -130,7 +130,7 @@ def interpreter(expressions arr) {
   mut result num = 0
   for mut i num = 0, ~expressions - 1 {
     match expressions[i] {
-      Expression.MUL |left, right| {
+      Expression.MUL |left num, right num| {
         result = result + (left * right)
       }
     }
