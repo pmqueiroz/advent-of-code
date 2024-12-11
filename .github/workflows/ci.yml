@@ -26,29 +26,13 @@ jobs:
         run: |
           asdf plugin add crystal
       - name: Setup deps
-        working-directory: ./${{ matrix.events.year }}
         run: |
           asdf install
           sudo apt-get update && sudo apt-get install -y libevent-dev
-      - name: Get implemented solutions
-        id: solutions
-        working-directory: ./${{ matrix.events.year }}
-        run: |
-          solutions=$(find . -mindepth 1 -maxdepth 1 -type d ! -name 'template' -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
-          echo "solutions=$solutions" >> $GITHUB_OUTPUT
-      - name: Run day
-        working-directory: ./${{ matrix.events.year }}
-        run: |
-          set -e
-          for day in $SOLUTIONS; do
-            echo "Running day $day part one"
-            $RUNNER "$day"/part-one.$EXT
-            echo "Running day $day part two"
-            $RUNNER "$day"/part-two.$EXT
-          done
+      - name: Run event
+        run: ./run.sh ${{ matrix.events.year }}
         env:
           RUNNER: ${{ matrix.events.runner }}
-          SOLUTIONS: ${{ steps.solutions.outputs.solutions }}
           EXT: ${{ matrix.events.ext }}
       
           
