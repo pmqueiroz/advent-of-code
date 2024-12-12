@@ -1,0 +1,110 @@
+import "native/os"
+import "native/path"
+import "io"
+import "strings"
+import "math"
+import "set"
+import "stack"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+const directions arr = [
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+  [0, -1]
+]
+
+def parse(input str) {
+  mut result arr = []
+
+  const lines arr = strings::split(input, '\n')
+
+  for mut i num = 0, ~lines - 1 {
+    result[~result] = range lines[i]
+  }
+
+  return result
+}
+
+def run(input str) {
+  const map arr = parse(input)
+  mut price num = 0
+  mut visited hashmap = set::new()
+
+  def dfs(x num, y num) {
+    const plant_type str = map[y][x]
+    mut region_cells arr = []
+    mut stack arr = [[x, y]]
+
+    for ~stack > 0 {
+      const cx num, cy num = stack[~stack - 1]
+      stack = stack::pop(stack)
+
+      if set::contains(visited, [cx, cy]) {
+        continue
+      }
+
+      set::add(visited, [cx, cy])
+      region_cells[~region_cells] = [cx, cy]
+
+      for mut i num = 0, ~directions - 1 {
+        const nx num = cx + directions[i][0]
+        const ny num = cy + directions[i][1]
+        if 0 <= nx and nx < ~map and 0 <= ny and ny < ~map[0] and !set::contains(visited, [nx, ny]) and map[ny][nx] == plant_type {
+          stack[~stack] = [nx, ny]
+        }
+      }
+    }
+
+    return region_cells
+  }
+
+  def calculate_perimeter(region_cells arr) {
+    mut perimeter num = 0
+    const rows num = ~map
+    const cols num = ~map[0]
+
+    for mut i num = 0, ~region_cells - 1 {
+      const x num, y num = region_cells[i]
+      for mut j num = 0, ~directions - 1 {
+        const nx num = x + directions[j][0]
+        const ny num = y + directions[j][1]
+        if nx < 0 or ny < 0 or nx >= rows or ny >= cols or map[ny][nx] != map[y][x] {
+          perimeter += 1
+        }
+      }
+    }
+
+
+    return perimeter
+  }
+
+  for mut y num = 0, ~map - 1 {
+    for mut x num = 0, ~map[y] - 1 {
+      const region_cells arr = dfs(x, y)
+      const area num = ~region_cells
+
+      if area == 0 {
+        continue
+      }
+
+      const perimeter num = calculate_perimeter(region_cells)
+      price += area * perimeter
+    }
+  }
+
+  io::println(price)
+}
+
+run("RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE")
+run(os::readFile(inputPath))
