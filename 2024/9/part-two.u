@@ -1,0 +1,164 @@
+import "native/os"
+import "native/path"
+import "io"
+import "arrays"
+
+const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
+
+enum Disk {
+  FILE(num, num)
+  FREE_SPACE(num)
+}
+
+def debug_fs(disk any) {
+  for mut i num = 0, ~disk - 1 {
+    match disk[i] {
+      Disk.FILE |size num, id num| {
+        for mut j num = 0, size - 1 {
+          io::print(id)
+        }
+      }
+      Disk.FREE_SPACE |size num| {
+        for mut j num = 0, size - 1 {
+          io::print(".")
+        }
+      }
+    }
+  }
+
+  io::println("")
+}
+
+def parse(input str) {
+  const disk_map arr = range input
+  const blocks arr = []
+  
+  for mut i num = 0, ~disk_map - 1 {
+    mut value any
+    if i == 0 { 
+      value = Disk.FILE(num(disk_map[i]), 0)
+    } else if i % 2 == 0 {
+      value = Disk.FILE(num(disk_map[i]), i / 2)
+    } else { 
+      value = Disk.FREE_SPACE(num(disk_map[i]))
+    }
+
+    blocks[~blocks] = value
+  }
+
+  return blocks
+}
+
+def get_last_file_index(fs arr, start num) num {
+  mut i num = start
+  for i >= 0 {
+    match fs[i] {
+      Disk.FILE || {
+        return i
+      }
+    }
+
+    i -= 1
+  }
+  return -1
+}
+
+def clone(array arr) {
+  const result arr = []
+  for mut i num = 0, ~array - 1 {
+    result[~result] = array[i]
+  }
+  return result
+}
+
+def swap(blocks arr, a num, b num) {
+  mut result arr = clone(blocks)
+  const temp any = result[a]
+  result[a] = result[b]
+  result[b] = temp
+
+  return result
+}
+
+def fill(blocks arr, a num, b num) {
+  mut result arr = clone(blocks)
+  const temp any = result[a]
+  result[a] = result[b]
+  result[b] = temp
+
+  return result
+}
+
+def get_size(fs_block any) num {
+  match fs_block {
+    Disk.FILE |size num| {
+      return size
+    }
+    Disk.FREE_SPACE |size num| {
+      return size
+    }
+  }
+}
+
+def rearrange(fs arr) {
+  debug_fs(fs)
+
+  mut result arr = clone(fs)
+  for mut i num = 0, ~result - 1 {
+    match fs[i] {
+      Disk.FREE_SPACE |curr_size num| {
+        for mut j num = ~result - 1, 0, -1 {
+          if i >= j {
+            break
+          }
+
+          match fs[j] {
+            Disk.FILE |predicate_size num| {
+              if predicate_size > curr_size {
+                continue
+              } else if predicate_size == curr_size {
+                io::println("swap", i, j)
+                result = swap(result, i, j)
+              } else {
+                io::println("fill", i, j)
+                result = fill(result, i, j)
+              }
+              break
+            }
+          }
+
+        }
+      }
+    }
+  }
+  return result
+}
+
+def checksum(blocks arr) num {
+  mut result num = 0
+  for mut i num = 0, ~blocks - 1 {
+    if blocks[i] == "." {
+      break
+    }
+
+    result += i * blocks[i]
+  }
+  return result
+}
+
+def run(input str) {
+  const fs arr = parse(input)
+  const rearranged_fs arr = rearrange(fs)
+
+  debug_fs(rearranged_fs)
+
+  # io::println(checksum(rearranged_blocks))
+}
+
+run("232222")
+# run("2333133121414131402")
+
+# --- ALERT ---
+# That solutions takes more than 35 minutes to run on the input.
+# Be patient xd.
+# run(os::readFile(inputPath))
