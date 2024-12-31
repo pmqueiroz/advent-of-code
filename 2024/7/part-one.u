@@ -10,7 +10,7 @@ const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
 def to_num(x str) { return num(x) }
 
 def parse(input str) arr {
-  const result arr = []
+  mut result arr = []
   const lines arr = strings::split(input, '\n')
   for mut i num = 0, ~lines -1 {
     const parts arr = strings::split(lines[i], ':')
@@ -24,7 +24,7 @@ def parse(input str) arr {
 
 def operators_permutation(count num) {
   const operators arr = ["+", "*"]
-  const result arr = []
+  mut result arr = []
 
   if (count == 1) {
     for mut i num = 0, ~operators - 1 {
@@ -54,7 +54,7 @@ def operators_permutation(count num) {
 }
 
 def resolve_expression(expr arr, operations arr) {
-  const result num = expr[0]
+  mut result num = expr[0]
 
   for mut i num = 0, ~operations - 1 {
     if (operations[i] == "+") {
@@ -67,7 +67,7 @@ def resolve_expression(expr arr, operations arr) {
 }
 
 def run(input str) {
-  const result num = 0
+  mut result num = 0
   const equations arr = parse(input)
 
   for mut i num = 0, ~equations - 1 {

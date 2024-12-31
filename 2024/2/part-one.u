@@ -8,10 +8,10 @@ const inputPath str = path::resolve(path::dirname(__FILE__), "input.txt")
 
 def run(input str) {
   const lines arr = strings::split(input, '\n')
-  const safes num = 0
+  mut safes num = 0
   for mut i num = 0, ~lines - 1 {
     const line arr = strings::split(lines[i], ' ')
-    mut isAscending bool
+    mut isAscending bool = false
     mut isSafe bool = false
 
     for mut j num = 0, ~line - 2 {
@@ -40,16 +40,15 @@ def run(input str) {
     if isSafe {
       safes = safes + 1
     }
-    
   }
 
   io::println(safes)
 }
 
-# run("7 6 4 2 1
-# 1 2 7 8 9
-# 9 7 6 2 1
-# 1 3 2 4 5
-# 8 6 4 4 1
-# 1 3 6 7 9")
+run("7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9")
 run(os::readFile(inputPath))

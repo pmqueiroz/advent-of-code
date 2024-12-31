@@ -57,7 +57,7 @@ def parse(input str) {
 }
 
 def run(input str) {
-  const result num = 0
+  mut result num = 0
   const parsed arr = parse(input)
   const rules arr = parsed[0]
   const pages arr = parsed[1]
@@ -65,7 +65,7 @@ def run(input str) {
   for mut i num = 0, ~pages - 1 {
     const is_page_valid bool = true
     mut page_order hashmap = to_order_map(pages[i])
-    const fixed_page bool = false
+    mut fixed_page bool = false
 
     mut j num = 0
 

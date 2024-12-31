@@ -107,7 +107,7 @@ def detect_floyds_cycle(maze arr, guard arr, obstacle arr) bool {
 def run(input str) {
   const maze arr = parse(input)
   const guard arr = find_guard(maze)
-  const loops num = 0
+  mut loops num = 0
 
   for mut i num = 0, (~maze * ~maze[0]) - 1 {
     const x num = math::floor(i / ~maze[0])

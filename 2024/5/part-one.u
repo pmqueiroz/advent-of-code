@@ -38,13 +38,13 @@ def parse(input str) {
 }
 
 def run(input str) {
-  const result num = 0
+  mut result num = 0
   const parsed arr = parse(input)
   const rules arr = parsed[0]
   const pages arr = parsed[1]
 
   for mut i num = 0, ~pages - 1 {
-    const is_page_valid bool = true
+    mut is_page_valid bool = true
 
     for mut j num = 0, ~rules - 1 {
       const left str = rules[j][0]

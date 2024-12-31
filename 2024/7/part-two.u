@@ -69,7 +69,7 @@ def resolve_expression(expr arr, operations arr) {
 }
 
 def run(input str) {
-  const result num = 0
+  mut result num = 0
   const equations arr = parse(input)
 
   for mut i num = 0, ~equations - 1 {

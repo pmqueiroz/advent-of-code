@@ -43,7 +43,7 @@ def check_line(line arr) arr {
 
 def run(input str) {
   const lines arr = strings::split(input, '\n')
-  const safes num = 0
+  mut safes num = 0
 
   for mut i num = 0, ~lines - 1 {
     const line arr = strings::split(lines[i], ' ')
