@@ -39,3 +39,15 @@ To run straightly with the default pass the argument `y`
 ```sh
 ./generate.sh y
 ```
+
+## Running
+
+Use the `run.sh` script to run all the solution in the current year or pass an
+year as `$1` argument 
+
+```
+./run.sh
+./run.sh 2015
+```
+
+> **Warning** 4.0 minimum bash version required 
